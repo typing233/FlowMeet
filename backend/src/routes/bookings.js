@@ -9,7 +9,6 @@ const router = express.Router();
 
 router.use(authMiddleware);
 
-// 获取用户的所有预约（作为主持人）
 router.get('/host', async (req, res, next) => {
   try {
     const { status, startDate, endDate } = req.query;
@@ -45,7 +44,6 @@ router.get('/host', async (req, res, next) => {
   }
 });
 
-// 获取用户的所有预约（作为访客）
 router.get('/guest', async (req, res, next) => {
   try {
     const { email } = req.user;
@@ -69,7 +67,72 @@ router.get('/guest', async (req, res, next) => {
   }
 });
 
-// 获取单个预约详情
+router.get('/upcoming', async (req, res, next) => {
+  try {
+    const now = new Date();
+    
+    const bookings = await prisma.booking.findMany({
+      where: {
+        OR: [
+          { hostId: req.user.id },
+          { guestEmail: req.user.email }
+        ],
+        status: 'confirmed',
+        startTime: {
+          gte: now
+        }
+      },
+      include: {
+        eventType: true,
+        host: {
+          select: { id: true, name: true, email: true, avatar: true }
+        }
+      },
+      orderBy: { startTime: 'asc' },
+      take: 10
+    });
+    
+    res.json({ bookings });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/stats/today', async (req, res, next) => {
+  try {
+    const today = moment().startOf('day').toDate();
+    const tomorrow = moment().add(1, 'days').startOf('day').toDate();
+    
+    const todayBookings = await prisma.booking.count({
+      where: {
+        hostId: req.user.id,
+        status: 'confirmed',
+        startTime: {
+          gte: today,
+          lt: tomorrow
+        }
+      }
+    });
+    
+    const upcomingBookings = await prisma.booking.count({
+      where: {
+        hostId: req.user.id,
+        status: 'confirmed',
+        startTime: {
+          gte: new Date()
+        }
+      }
+    });
+    
+    res.json({
+      today: todayBookings,
+      upcoming: upcomingBookings
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get('/:id', [
   param('id').isString().withMessage('无效的ID')
 ], async (req, res, next) => {
@@ -100,7 +163,6 @@ router.get('/:id', [
   }
 });
 
-// 取消预约
 router.post('/:id/cancel', [
   param('id').isString().withMessage('无效的ID')
 ], async (req, res, next) => {
@@ -133,74 +195,6 @@ router.post('/:id/cancel', [
     });
     
     res.json({ message: '预约已取消', booking: updatedBooking });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// 获取即将到来的预约
-router.get('/upcoming', async (req, res, next) => {
-  try {
-    const now = new Date();
-    
-    const bookings = await prisma.booking.findMany({
-      where: {
-        OR: [
-          { hostId: req.user.id },
-          { guestEmail: req.user.email }
-        ],
-        status: 'confirmed',
-        startTime: {
-          gte: now
-        }
-      },
-      include: {
-        eventType: true,
-        host: {
-          select: { id: true, name: true, email: true, avatar: true }
-        }
-      },
-      orderBy: { startTime: 'asc' },
-      take: 10
-    });
-    
-    res.json({ bookings });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// 获取今日预约统计
-router.get('/stats/today', async (req, res, next) => {
-  try {
-    const today = moment().startOf('day').toDate();
-    const tomorrow = moment().add(1, 'days').startOf('day').toDate();
-    
-    const todayBookings = await prisma.booking.count({
-      where: {
-        hostId: req.user.id,
-        status: 'confirmed',
-        startTime: {
-          gte: today,
-          lt: tomorrow
-        }
-      }
-    });
-    
-    const upcomingBookings = await prisma.booking.count({
-      where: {
-        hostId: req.user.id,
-        status: 'confirmed',
-        startTime: {
-          gte: new Date()
-        }
-      }
-    });
-    
-    res.json({
-      today: todayBookings,
-      upcoming: upcomingBookings
-    });
   } catch (error) {
     next(error);
   }
