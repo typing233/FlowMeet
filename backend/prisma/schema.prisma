@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String?
+  name          String
+  avatar        String?
+  timezone      String    @default("Asia/Shanghai")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  calendarConnections CalendarConnection[]
+  eventTypes          EventType[]
+  bookingsAsHost      Booking[]   @relation("BookingsAsHost")
+  bookingsAsGuest     Booking[]   @relation("BookingsAsGuest")
+}
+
+model CalendarConnection {
+  id            String    @id @default(cuid())
+  userId        String
+  provider      String
+  accessToken   String
+  refreshToken  String?
+  tokenExpiry   DateTime?
+  calendarId    String    @default("primary")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, provider])
+}
+
+model EventType {
+  id              String    @id @default(cuid())
+  userId          String
+  slug            String
+  title           String
+  description     String?
+  duration        Int
+  
+  locationType    String    @default("online")
+  locationValue   String?
+  
+  minBookingNotice Int     @default(24)
+  bufferTime      Int       @default(0)
+  maxBookingsPerDay Int    @default(5)
+  
+  availability    String    @default("{}")
+  customFields    String    @default("[]")
+  questions       String    @default("[]")
+  
+  sendReminder    Boolean   @default(true)
+  reminderMinutes Int       @default(60)
+  
+  isActive        Boolean   @default(true)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookings        Booking[]
+  
+  @@unique([userId, slug])
+}
+
+model Booking {
+  id              String    @id @default(cuid())
+  eventTypeId     String
+  hostId          String
+  guestEmail      String
+  guestName       String
+  startTime       DateTime
+  endTime         DateTime
+  timezone        String    @default("Asia/Shanghai")
+  
+  guestPhone      String?
+  guestNotes      String?
+  customResponses String    @default("{}")
+  
+  status          String    @default("confirmed")
+  
+  meetingUrl      String?
+  location        String?
+  
+  reminderSent    Boolean   @default(false)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  eventType       EventType @relation(fields: [eventTypeId], references: [id], onDelete: Cascade)
+  host            User      @relation("BookingsAsHost", fields: [hostId], references: [id], onDelete: Cascade)
+  guest           User?     @relation("BookingsAsGuest", fields: [guestUserId], references: [id])
+  
+  guestUserId     String?
+}
