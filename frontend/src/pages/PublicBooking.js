@@ -11,7 +11,8 @@ import {
   Check,
   ArrowRight,
   AlertCircle,
-  Loader2
+  Loader2,
+  ExternalLink
 } from 'lucide-react';
 import { publicAPI } from '../services/api';
 import { format } from 'date-fns';
