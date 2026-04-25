@@ -75,4 +75,40 @@ export const publicAPI = {
   createBooking: (data) => api.post('/public/book', data),
 };
 
+export const aiAssistantAPI = {
+  getSessions: () => api.get('/ai-assistant/sessions'),
+  createSession: (data) => api.post('/ai-assistant/sessions', data),
+  getSession: (sessionId) => api.get(`/ai-assistant/sessions/${sessionId}`),
+  sendMessage: (data) => api.post('/ai-assistant/chat', data),
+  confirmAction: (actionId) => api.post(`/ai-assistant/actions/${actionId}/confirm`),
+  cancelAction: (actionId) => api.post(`/ai-assistant/actions/${actionId}/cancel`),
+};
+
+export const recommendationAPI = {
+  getTimezones: () => api.get('/recommendations/timezones'),
+  getRecommendedSlots: (data) => api.post('/recommendations/slots', data),
+  getPublicRecommendations: (userId, slug, guestTimezone) => 
+    api.get(`/recommendations/event-types/${userId}/${slug}/recommendations`, { 
+      params: { guestTimezone } 
+    }),
+};
+
+export const timelineAPI = {
+  getLifecycle: () => api.get('/timeline/lifecycle'),
+  getBookings: (status) => api.get('/timeline/bookings', { params: { status } }),
+  getBookingDetail: (bookingId) => api.get(`/timeline/bookings/${bookingId}`),
+  getNotificationRules: () => api.get('/timeline/notifications/rules'),
+  createNotificationRule: (data) => api.post('/timeline/notifications/rules', data),
+  updateNotificationRule: (ruleId, data) => api.put(`/timeline/notifications/rules/${ruleId}`, data),
+  deleteNotificationRule: (ruleId) => api.delete(`/timeline/notifications/rules/${ruleId}`),
+  createDefaultRules: () => api.post('/timeline/notifications/rules/defaults'),
+  getNotificationLogs: (bookingId) => api.get('/timeline/notifications/logs', { params: { bookingId } }),
+  getWebhooks: () => api.get('/timeline/webhooks'),
+  createWebhook: (data) => api.post('/timeline/webhooks', data),
+  updateWebhook: (subscriptionId, data) => api.put(`/timeline/webhooks/${subscriptionId}`, data),
+  deleteWebhook: (subscriptionId) => api.delete(`/timeline/webhooks/${subscriptionId}`),
+  testWebhook: (data) => api.post('/timeline/webhooks/test', data),
+  getWebhookLogs: (subscriptionId) => api.get(`/timeline/webhooks/logs/${subscriptionId}`),
+};
+
 export default api;

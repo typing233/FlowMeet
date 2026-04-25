@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Calendar, User, LogOut, Settings, Menu, X } from 'lucide-react';
+import { Calendar, User, LogOut, Settings, Menu, X, Bot, Clock } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState } from 'react';
 
@@ -47,6 +47,20 @@ export default function Navbar() {
                   className="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                   我的预约
+                </Link>
+                <Link
+                  to="/ai-assistant"
+                  className="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1"
+                >
+                  <Bot className="w-4 h-4" />
+                  AI助手
+                </Link>
+                <Link
+                  to="/booking-timeline"
+                  className="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-1"
+                >
+                  <Clock className="w-4 h-4" />
+                  预约旅程
                 </Link>
                 <div className="flex items-center gap-3 ml-4 pl-4 border-l border-gray-200">
                   <div className="flex items-center gap-2">
@@ -120,6 +134,22 @@ export default function Navbar() {
                   className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50"
                 >
                   我的预约
+                </Link>
+                <Link
+                  to="/ai-assistant"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                >
+                  <Bot className="w-5 h-5" />
+                  AI助手
+                </Link>
+                <Link
+                  to="/booking-timeline"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                >
+                  <Clock className="w-5 h-5" />
+                  预约旅程
                 </Link>
                 <div className="pt-4 border-t border-gray-200">
                   <div className="flex items-center gap-3 px-3 py-2">

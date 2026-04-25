@@ -19,6 +19,9 @@ app.use('/api/event-types', require('./routes/eventTypes'));
 app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/calendar', require('./routes/calendar'));
 app.use('/api/public', require('./routes/public'));
+app.use('/api/ai-assistant', require('./routes/aiAssistant'));
+app.use('/api/recommendations', require('./routes/recommendation'));
+app.use('/api/timeline', require('./routes/timeline'));
 
 // 健康检查
 app.get('/api/health', (req, res) => {

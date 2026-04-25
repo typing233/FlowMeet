@@ -12,6 +12,8 @@ import EventTypesForm from './pages/EventTypesForm';
 import Bookings from './pages/Bookings';
 import Settings from './pages/Settings';
 import PublicBooking from './pages/PublicBooking';
+import AIAssistant from './pages/AIAssistant';
+import BookingTimeline from './pages/BookingTimeline';
 
 function App() {
   const location = useLocation();
@@ -59,6 +61,18 @@ function App() {
         <Route path="/settings" element={
           <PrivateRoute>
             <Settings />
+          </PrivateRoute>
+        } />
+        
+        <Route path="/ai-assistant" element={
+          <PrivateRoute>
+            <AIAssistant />
+          </PrivateRoute>
+        } />
+        
+        <Route path="/booking-timeline" element={
+          <PrivateRoute>
+            <BookingTimeline />
           </PrivateRoute>
         } />
         
